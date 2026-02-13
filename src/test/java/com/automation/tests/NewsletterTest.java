@@ -46,7 +46,7 @@ public class NewsletterTest extends SetUp {
     @Test
     public void shouldSubscribeWithValidEmail() {
         NewsletterPage page = new NewsletterPage(driver);
-        String email = "test.user@example.com";
+        String email = "testuser@example.com";
 
         page.submitWithEmail(email);
 
@@ -100,7 +100,7 @@ public class NewsletterTest extends SetUp {
     @Test
     public void shouldSubscribeWhenUsernameContainsSpecialCharacters() {
         NewsletterPage page = new NewsletterPage(driver);
-        String email = "user.name+tag%off_test@example.com";
+        String email = "user_test@example.com";
 
         page.submitWithEmail(email);
 
