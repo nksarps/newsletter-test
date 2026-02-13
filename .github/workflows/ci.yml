@@ -26,7 +26,7 @@ jobs:
       - name: Run tests
         env:
           MAVEN_OPTS: "-Xmx1g"
-        run: mvn -B clean test -DtrimStackTrace=false -Dsurefire.printSummary=true
+        run: mvn -B clean test -DtrimStackTrace=false -Dsurefire.printSummary=true -Dheadless=true
 
       - name: Upload Surefire reports
         if: always()
