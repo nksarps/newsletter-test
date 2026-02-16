@@ -68,6 +68,19 @@ public class NewsletterTest extends SetUp {
     }
 
     /**
+     * Verifies error when email is empty.
+     */
+    @Test
+    public void shouldShowErrorWhenEmailIsEmpty() {
+        NewsletterPage page = new NewsletterPage(driver);
+
+        page.submit();
+
+        assertTrue(page.isErrorVisible());
+        assertEquals("Valid email required", page.getErrorMessage());
+    }
+
+    /**
      * Verifies error when username contains whitespace.
      */
     @Test
