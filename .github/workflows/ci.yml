@@ -24,9 +24,74 @@ jobs:
         run: google-chrome --version
 
       - name: Run tests
+        id: run_tests
         env:
           MAVEN_OPTS: "-Xmx1g"
         run: mvn -B clean test -DtrimStackTrace=false -Dsurefire.printSummary=true -Dheadless=true
+
+      - name: Extract test results
+        if: always()
+        id: test_results
+        run: |
+          COMMIT_SHA=${GITHUB_SHA:0:7}
+
+          TOTAL=0
+          FAILED=0
+          SKIPPED=0
+
+          if ls target/surefire-reports/*.txt >/dev/null 2>&1; then
+            while read -r line; do
+              RUN=$(echo "$line" | sed -n 's/.*Tests run: \([0-9]*\).*/\1/p')
+              FAIL=$(echo "$line" | sed -n 's/.*Failures: \([0-9]*\).*/\1/p')
+              ERR=$(echo "$line" | sed -n 's/.*Errors: \([0-9]*\).*/\1/p')
+              SKIP=$(echo "$line" | sed -n 's/.*Skipped: \([0-9]*\).*/\1/p')
+
+              if [ -n "$RUN" ]; then
+                TOTAL=$((TOTAL + RUN))
+                FAILED=$((FAILED + FAIL + ERR))
+                SKIPPED=$((SKIPPED + SKIP))
+              fi
+            done < <(grep -h "Tests run:" target/surefire-reports/*.txt || true)
+          fi
+
+          PASSED=$((TOTAL - FAILED - SKIPPED))
+
+          # Extract TC IDs from failed tests using Python
+          FAILING_TESTS_RAW=$(python3 << 'PYTHON_EOF'
+          import xml.etree.ElementTree as ET
+          import glob
+
+          failing_tests = []
+          for xml_file in glob.glob('target/surefire-reports/TEST-*.xml'):
+              tree = ET.parse(xml_file)
+              root = tree.getroot()
+              for testcase in root.findall('.//testcase'):
+                  if testcase.find('failure') is not None or testcase.find('error') is not None:
+                      system_err = testcase.find('system-err')
+                      if system_err is not None and system_err.text:
+                          text = system_err.text.strip()
+                          if 'TC' in text:
+                              failing_tests.append(text.split('\n')[0] if '\n' in text else text)
+          
+          for test in sorted(set(failing_tests)):
+              print(test)
+          PYTHON_EOF
+          )
+
+          # Escape newlines for JSON payload (replace newline with literal \n)
+          FAILING_TESTS_JSON=$(echo "$FAILING_TESTS_RAW" | sed ':a;N;$!ba;s/\n/\\n/g')
+
+          echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+          echo "failed=$FAILED" >> $GITHUB_OUTPUT
+          echo "skipped=$SKIPPED" >> $GITHUB_OUTPUT
+          echo "failing_tests_raw<<EOF" >> $GITHUB_OUTPUT
+          echo "$FAILING_TESTS_RAW" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "failing_tests_json<<EOF" >> $GITHUB_OUTPUT
+          echo "$FAILING_TESTS_JSON" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Upload Surefire reports
         if: always()
@@ -41,7 +106,7 @@ jobs:
         with:
           payload: |
             {
-              "text": "CI ${{ job.status }} for *${{ github.repository }}* on *${{ github.ref_name }}* by *${{ github.actor }}*.\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+              "text": "Repository: ${{ github.repository }}\nBranch: ${{ github.ref_name }}\nCommit: ${{ steps.test_results.outputs.commit_sha }}\n\nStatus: ${{ job.status == 'success' && 'Pass' || 'Fail' }}\n\n${{ job.status == 'success' && 'All tests passed.' || format('Failing Tests:\n{0}', steps.test_results.outputs.failing_tests_json) }}\n\nFull Results:\nTotal Tests: ${{ steps.test_results.outputs.total }}\nFailed Tests: ${{ steps.test_results.outputs.failed }}\nSkipped Tests: ${{ steps.test_results.outputs.skipped }}\n\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -58,6 +123,18 @@ jobs:
           to: ${{ secrets.NOTIFY_EMAIL_TO }}
           from: ${{ secrets.NOTIFY_EMAIL_FROM }}
           body: |
-            CI ${{ job.status }} for ${{ github.repository }} on ${{ github.ref_name }}.
-            Actor: ${{ github.actor }}
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ steps.test_results.outputs.commit_sha }}
+
+            Status: ${{ job.status == 'success' && 'Pass' || 'Fail' }}
+
+            ${{ job.status == 'success' && 'All tests passed.' || 'Failing Tests:' }}
+            ${{ steps.test_results.outputs.failing_tests_raw }}
+
+            Full Results:
+            Total Tests: ${{ steps.test_results.outputs.total }}
+            Failed Tests: ${{ steps.test_results.outputs.failed }}
+            Skipped Tests: ${{ steps.test_results.outputs.skipped }}
+
             Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
