@@ -56,8 +56,27 @@ jobs:
 
           PASSED=$((TOTAL - FAILED - SKIPPED))
 
-          # Extract failing test names from text reports (shows display names with TC IDs)
-          FAILING_TESTS=$(grep "FAILED:" target/surefire-reports/*.txt 2>/dev/null | sed 's/.*FAILED: //' | sort -u || true)
+          # Extract TC IDs from failed tests using Python
+          FAILING_TESTS=$(python3 << 'PYTHON_EOF'
+          import xml.etree.ElementTree as ET
+          import glob
+
+          failing_tests = []
+          for xml_file in glob.glob('target/surefire-reports/TEST-*.xml'):
+              tree = ET.parse(xml_file)
+              root = tree.getroot()
+              for testcase in root.findall('.//testcase'):
+                  if testcase.find('failure') is not None or testcase.find('error') is not None:
+                      system_err = testcase.find('system-err')
+                      if system_err is not None and system_err.text:
+                          text = system_err.text.strip()
+                          if 'TC' in text:
+                              failing_tests.append(text.split('\n')[0] if '\n' in text else text)
+          
+          for test in sorted(set(failing_tests)):
+              print(test)
+          PYTHON_EOF
+          )
 
           echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
           echo "total=$TOTAL" >> $GITHUB_OUTPUT
