@@ -56,8 +56,8 @@ jobs:
 
           PASSED=$((TOTAL - FAILED - SKIPPED))
 
-          # Extract failing test names
-          FAILING_TESTS=$(grep -R "testcase name=" target/surefire-reports/TEST-*.xml | grep -A1 "failure" | grep "testcase name=" | sed 's/.*name="\([^"]*\)".*/\1/' || true)
+          # Extract failing test names from text reports (shows display names with TC IDs)
+          FAILING_TESTS=$(grep "FAILED:" target/surefire-reports/*.txt 2>/dev/null | sed 's/.*FAILED: //' | sort -u || true)
 
           echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
           echo "total=$TOTAL" >> $GITHUB_OUTPUT
