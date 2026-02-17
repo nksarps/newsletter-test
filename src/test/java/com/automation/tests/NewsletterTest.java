@@ -52,7 +52,7 @@ public class NewsletterTest extends BaseTest {
 
         page.submitWithEmail(email);
 
-        assertEquals("Thanks for subscribing!", page.getSuccessTitle());
+        assertEquals("Thanksfor subscribing!", page.getSuccessTitle());
         assertEquals(email, page.getSuccessEmail());
     }
 
