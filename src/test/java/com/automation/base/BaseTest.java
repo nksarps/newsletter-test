@@ -1,8 +1,5 @@
 package com.automation.base;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.TestWatcher;
 
@@ -18,16 +15,6 @@ public class BaseTest extends SetUp {
 
     private static final Logger LOGGER = Logger.getLogger(BaseTest.class.getName());
 
-    @BeforeEach
-    void logStart(TestInfo testInfo) {
-        LOGGER.info("START: " + testInfo.getDisplayName());
-    }
-
-    @AfterEach
-    void logEnd(TestInfo testInfo) {
-        LOGGER.info("END: " + testInfo.getDisplayName());
-    }
-
     static class JulTestWatcher implements TestWatcher {
         @Override
         public void testSuccessful(org.junit.jupiter.api.extension.ExtensionContext context) {
@@ -37,11 +24,6 @@ public class BaseTest extends SetUp {
         @Override
         public void testFailed(org.junit.jupiter.api.extension.ExtensionContext context, Throwable cause) {
             LOGGER.log(Level.SEVERE, "FAILED: " + context.getDisplayName(), cause);
-        }
-
-        @Override
-        public void testAborted(org.junit.jupiter.api.extension.ExtensionContext context, Throwable cause) {
-            LOGGER.log(Level.WARNING, "ABORTED: " + context.getDisplayName(), cause);
         }
     }
 }

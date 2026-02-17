@@ -40,6 +40,5 @@ public class SetUp {
         
         driver = new ChromeDriver(options);
         driver.get("https://danewsletter.netlify.app/");
-        System.out.println(driver.getTitle());
     }
 }
