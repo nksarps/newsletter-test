@@ -67,7 +67,7 @@ public class NewsletterTest extends BaseTest {
         page.submitWithEmail("invalid");
 
         assertTrue(page.isErrorVisible());
-        assertEquals("Valid email required", page.getErrorMessage());
+        assertEquals("Validemail required", page.getErrorMessage());
     }
 
     /**

@@ -124,7 +124,8 @@ jobs:
 
             Status: ${{ job.status == 'success' && 'Pass' || 'Fail' }}
 
-            ${{ job.status == 'success' && 'All tests passed.' || format('Failing Tests:\n{0}', steps.test_results.outputs.failing_tests) }}
+            ${{ job.status == 'success' && 'All tests passed.' || 'Failing Tests:' }}
+            ${{ steps.test_results.outputs.failing_tests }}
 
             Full Results:
             Total Tests: ${{ steps.test_results.outputs.total }}
