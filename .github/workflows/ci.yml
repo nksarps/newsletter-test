@@ -78,8 +78,8 @@ jobs:
           PYTHON_EOF
           )
 
-          # Escape newlines for JSON
-          FAILING_TESTS_JSON=$(echo "$FAILING_TESTS_RAW" | jq -Rs '.')
+          # Escape newlines for JSON payload (replace newline with literal \n)
+          FAILING_TESTS_JSON=$(echo "$FAILING_TESTS_RAW" | sed ':a;N;$!ba;s/\n/\\n/g')
 
           echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
           echo "total=$TOTAL" >> $GITHUB_OUTPUT
@@ -89,7 +89,9 @@ jobs:
           echo "failing_tests_raw<<EOF" >> $GITHUB_OUTPUT
           echo "$FAILING_TESTS_RAW" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-          echo "failing_tests_json=$FAILING_TESTS_JSON" >> $GITHUB_OUTPUT
+          echo "failing_tests_json<<EOF" >> $GITHUB_OUTPUT
+          echo "$FAILING_TESTS_JSON" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Upload Surefire reports
         if: always()
