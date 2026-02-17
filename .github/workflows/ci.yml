@@ -29,17 +29,15 @@ jobs:
           MAVEN_OPTS: "-Xmx1g"
         run: mvn -B clean test -DtrimStackTrace=false -Dsurefire.printSummary=true -Dheadless=true
 
-      - name: Build notification details
+      - name: Extract test results
         if: always()
-        id: notify_details
+        id: test_results
         run: |
-          JAVA_VERSION=$(java -version 2>&1 | head -n 1 | awk -F\" '{print $2}')
           COMMIT_SHA=${GITHUB_SHA:0:7}
 
           TOTAL=0
           FAILED=0
           SKIPPED=0
-          PASSED=0
 
           if ls target/surefire-reports/*.txt >/dev/null 2>&1; then
             while read -r line; do
@@ -58,26 +56,17 @@ jobs:
 
           PASSED=$((TOTAL - FAILED - SKIPPED))
 
-          if [ "${{ job.status }}" = "success" ]; then
-            RESULT_MSG="All tests passed."
-          else
-            FAILING_TESTS=$(grep -R "<failure" -n target/surefire-reports/TEST-*.xml | head -n 10 || true)
-            if [ -z "$FAILING_TESTS" ]; then
-              RESULT_MSG="Tests failed. See surefire reports for details."
-            else
-              RESULT_MSG="Failing tests:\n$FAILING_TESTS"
-            fi
-          fi
+          # Extract failing test names
+          FAILING_TESTS=$(grep -R "testcase name=" target/surefire-reports/TEST-*.xml | grep -A1 "failure" | grep "testcase name=" | sed 's/.*name="\([^"]*\)".*/\1/' || true)
 
-          echo "java_version=$JAVA_VERSION" >> $GITHUB_OUTPUT
           echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
           echo "total=$TOTAL" >> $GITHUB_OUTPUT
           echo "passed=$PASSED" >> $GITHUB_OUTPUT
           echo "failed=$FAILED" >> $GITHUB_OUTPUT
           echo "skipped=$SKIPPED" >> $GITHUB_OUTPUT
 
-          echo "result<<EOF" >> $GITHUB_OUTPUT
-          echo "$RESULT_MSG" >> $GITHUB_OUTPUT
+          echo "failing_tests<<EOF" >> $GITHUB_OUTPUT
+          echo "$FAILING_TESTS" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Upload Surefire reports
@@ -90,58 +79,13 @@ jobs:
       - name: Slack notify
         if: always()
         uses: slackapi/slack-github-action@v1.27.0
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
           payload: |
             {
-              "text": "${{ job.status == 'success' && '✅ CI Passed' || '❌ CI Failed' }} - ${{ github.repository }}",
-              "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "${{ job.status == 'success' && '✅ CI Passed' || '❌ CI Failed' }}"
-                  }
-                },
-                {
-                  "type": "section",
-                  "fields": [
-                    { "type": "mrkdwn", "text": "*Repo:*\n${{ github.repository }}" },
-                    { "type": "mrkdwn", "text": "*Branch:*\n${{ github.ref_name }}" },
-                    { "type": "mrkdwn", "text": "*Java:*\n${{ steps.notify_details.outputs.java_version }}" },
-                    { "type": "mrkdwn", "text": "*Commit:*\n${{ steps.notify_details.outputs.commit_sha }}" }
-                  ]
-                },
-                {
-                  "type": "section",
-                  "fields": [
-                    { "type": "mrkdwn", "text": "*Status:*\n${{ job.status }}" },
-                    { "type": "mrkdwn", "text": "*Passed:*\n${{ steps.notify_details.outputs.passed }}" },
-                    { "type": "mrkdwn", "text": "*Failed:*\n${{ steps.notify_details.outputs.failed }}" },
-                    { "type": "mrkdwn", "text": "*Skipped:*\n${{ steps.notify_details.outputs.skipped }}" },
-                    { "type": "mrkdwn", "text": "*Total:*\n${{ steps.notify_details.outputs.total }}" }
-                  ]
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Result*\n${{ steps.notify_details.outputs.result }}"
-                  }
-                },
-                {
-                  "type": "actions",
-                  "elements": [
-                    {
-                      "type": "button",
-                      "text": { "type": "plain_text", "text": "View Run" },
-                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                    }
-                  ]
-                }
-              ]
+              "text": "Repository: ${{ github.repository }}\nBranch: ${{ github.ref_name }}\nCommit: ${{ steps.test_results.outputs.commit_sha }}\n\nStatus: ${{ job.status == 'success' && 'Pass' || 'Fail' }}\n\n${{ job.status == 'success' && 'All tests passed.' || format('Failing Tests:\n{0}', steps.test_results.outputs.failing_tests) }}\n\nFull Results:\nTotal Tests: ${{ steps.test_results.outputs.total }}\nFailed Tests: ${{ steps.test_results.outputs.failed }}\nSkipped Tests: ${{ steps.test_results.outputs.skipped }}\n\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Email notify
         if: always()
@@ -155,22 +99,17 @@ jobs:
           to: ${{ secrets.NOTIFY_EMAIL_TO }}
           from: ${{ secrets.NOTIFY_EMAIL_FROM }}
           body: |
-            CI Notification
-
-            Repo:   ${{ github.repository }}
+            Repository: ${{ github.repository }}
             Branch: ${{ github.ref_name }}
-            Action: ${{ github.event_name }}
-            Java:   ${{ steps.notify_details.outputs.java_version }}
-            Commit: ${{ steps.notify_details.outputs.commit_sha }}
+            Commit: ${{ steps.test_results.outputs.commit_sha }}
 
-            Status:  ${{ job.status }}
-            Passed:  ${{ steps.notify_details.outputs.passed }}
-            Failed:  ${{ steps.notify_details.outputs.failed }}
-            Skipped: ${{ steps.notify_details.outputs.skipped }}
-            Total:   ${{ steps.notify_details.outputs.total }}
+            Status: ${{ job.status == 'success' && 'Pass' || 'Fail' }}
 
-            Result:
-            ${{ steps.notify_details.outputs.result }}
+            ${{ job.status == 'success' && 'All tests passed.' || format('Failing Tests:\n{0}', steps.test_results.outputs.failing_tests) }}
 
-            Run:
-            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Full Results:
+            Total Tests: ${{ steps.test_results.outputs.total }}
+            Failed Tests: ${{ steps.test_results.outputs.failed }}
+            Skipped Tests: ${{ steps.test_results.outputs.skipped }}
+
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
