@@ -144,33 +144,6 @@ public class NewsletterPage extends BasePage {
     }
 
     /**
-     * Checks whether the sign-up container is displayed.
-     *
-     * @return True when the sign-up container is visible.
-     */
-    public boolean isSignupVisible() {
-        return isDisplayed(signupContainer);
-    }
-
-    /**
-     * Checks whether the form is displayed.
-     *
-     * @return True when the form is visible.
-     */
-    public boolean isFormVisible() {
-        return isDisplayed(newsletterForm);
-    }
-
-    /**
-     * Checks whether the success container is displayed.
-     *
-     * @return True when the success container is visible.
-     */
-    public boolean isSuccessVisible() {
-        return isDisplayed(successContainer);
-    }
-
-    /**
      * Reads the success title text.
      *
      * @return Success title content.
@@ -180,30 +153,11 @@ public class NewsletterPage extends BasePage {
     }
 
     /**
-     * Reads the success message text.
-     *
-     * @return Success message content.
-     */
-    public String getSuccessMessage() {
-        return getText(successMessage);
-    }
-
-    /**
      * Reads the email displayed in the success message.
      *
      * @return Email value shown after subscription.
      */
     public String getSuccessEmail() {
         return getText(successEmail);
-    }
-
-    /**
-     * Dismisses the success message dialog.
-     *
-     * @return Current page object for chaining.
-     */
-    public NewsletterPage dismissSuccess() {
-        click(dismissButton);
-        return this;
     }
 }
