@@ -2,7 +2,10 @@ name: CI
 
 on:
   push:
+    branches: [main, develop, feature/*]
   pull_request:
+    branches: [main, develop, feature/*]
+  repository_dispatch:
 
 jobs:
   test:
