@@ -1,7 +1,6 @@
 package com.automation.tests;
 
 import com.automation.base.BaseTest;
-import com.automation.pages.NewsletterPage;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +35,7 @@ public class NewsletterTest extends BaseTest {
      */
     @BeforeEach
     public void beforeEach() {
-        new NewsletterPage(driver).open();
+        newsletterPage.open();
     }
 
     /**
@@ -45,13 +44,12 @@ public class NewsletterTest extends BaseTest {
     @Test
     @DisplayName("TC001: Validate sign up succeeds with valid email")
     public void shouldSubscribeWithValidEmail() {
-        NewsletterPage page = new NewsletterPage(driver);
         String email = "testuser@example.com";
 
-        page.submitWithEmail(email);
+        newsletterPage.submitWithEmail(email);
 
-        assertEquals("Thanks for subscribing!", page.getSuccessTitle());
-        assertEquals(email, page.getSuccessEmail());
+        assertEquals("Thanks for subscribing!", newsletterPage.getSuccessTitle());
+        assertEquals(email, newsletterPage.getSuccessEmail());
     }
 
     /**
@@ -60,12 +58,10 @@ public class NewsletterTest extends BaseTest {
     @Test
     @DisplayName("TC002: Validate sign up fails with invalid email")
     public void shouldShowErrorForInvalidEmail() {
-        NewsletterPage page = new NewsletterPage(driver);
+        newsletterPage.submitWithEmail("invalid");
 
-        page.submitWithEmail("invalid");
-
-        assertTrue(page.isErrorVisible());
-        assertEquals("Valid email required", page.getErrorMessage());
+        assertTrue(newsletterPage.isErrorVisible());
+        assertEquals("Valid email required", newsletterPage.getErrorMessage());
     }
 
     /**
@@ -74,12 +70,10 @@ public class NewsletterTest extends BaseTest {
     @Test
     @DisplayName("TC003: Validate sign up fails with empty email")
     public void shouldShowErrorWhenEmailIsEmpty() {
-        NewsletterPage page = new NewsletterPage(driver);
+        newsletterPage.submit();
 
-        page.submit();
-
-        assertTrue(page.isErrorVisible());
-        assertEquals("Valid email required", page.getErrorMessage());
+        assertTrue(newsletterPage.isErrorVisible());
+        assertEquals("Valid email required", newsletterPage.getErrorMessage());
     }
 
     /**
@@ -88,12 +82,10 @@ public class NewsletterTest extends BaseTest {
     @Test
     @DisplayName("TC004: Validate sign up fails when username has whitespace")
     public void shouldShowErrorWhenUsernameContainsWhitespace() {
-        NewsletterPage page = new NewsletterPage(driver);
+        newsletterPage.submitWithEmail("john doe@example.com");
 
-        page.submitWithEmail("john doe@example.com");
-
-        assertTrue(page.isErrorVisible());
-        assertEquals("Valid email required", page.getErrorMessage());
+        assertTrue(newsletterPage.isErrorVisible());
+        assertEquals("Valid email required", newsletterPage.getErrorMessage());
     }
 
     /**
@@ -102,13 +94,12 @@ public class NewsletterTest extends BaseTest {
     @Test
     @DisplayName("TC005: Validate sign up succeeds when username has numbers")
     public void shouldSubscribeWhenUsernameContainsNumbers() {
-        NewsletterPage page = new NewsletterPage(driver);
         String email = "user123@example.com";
 
-        page.submitWithEmail(email);
+        newsletterPage.submitWithEmail(email);
 
-        assertEquals("Thanks for subscribing!", page.getSuccessTitle());
-        assertEquals(email, page.getSuccessEmail());
+        assertEquals("Thanks for subscribing!", newsletterPage.getSuccessTitle());
+        assertEquals(email, newsletterPage.getSuccessEmail());
     }
 
     /**
@@ -117,13 +108,12 @@ public class NewsletterTest extends BaseTest {
     @Test
     @DisplayName("TC006: Validate sign up succeeds when username has special characters")
     public void shouldSubscribeWhenUsernameContainsSpecialCharacters() {
-        NewsletterPage page = new NewsletterPage(driver);
         String email = "user_test@example.com";
 
-        page.submitWithEmail(email);
+        newsletterPage.submitWithEmail(email);
 
-        assertEquals("Thanks for subscribing!", page.getSuccessTitle());
-        assertEquals(email, page.getSuccessEmail());
+        assertEquals("Thanks for subscribing!", newsletterPage.getSuccessTitle());
+        assertEquals(email, newsletterPage.getSuccessEmail());
     }
 
     /**
@@ -132,12 +122,10 @@ public class NewsletterTest extends BaseTest {
     @Test
     @DisplayName("TC007: Validate sign up fails with empty username")
     public void shouldShowErrorWhenUsernameIsEmpty() {
-        NewsletterPage page = new NewsletterPage(driver);
+        newsletterPage.submitWithEmail("@example.com");
 
-        page.submitWithEmail("@example.com");
-
-        assertTrue(page.isErrorVisible());
-        assertEquals("Valid email required", page.getErrorMessage());
+        assertTrue(newsletterPage.isErrorVisible());
+        assertEquals("Valid email required", newsletterPage.getErrorMessage());
     }
 
     /**
@@ -146,12 +134,10 @@ public class NewsletterTest extends BaseTest {
     @Test
     @DisplayName("TC008: Validate sign up fails when mail server has numbers")
     public void shouldShowErrorWhenMailServerContainsNumbers() {
-        NewsletterPage page = new NewsletterPage(driver);
+        newsletterPage.submitWithEmail("user@exam123ple.com");
 
-        page.submitWithEmail("user@exam123ple.com");
-
-        assertTrue(page.isErrorVisible());
-        assertEquals("Valid email required", page.getErrorMessage());
+        assertTrue(newsletterPage.isErrorVisible());
+        assertEquals("Valid email required", newsletterPage.getErrorMessage());
     }
 
     /**
@@ -160,12 +146,10 @@ public class NewsletterTest extends BaseTest {
     @Test
     @DisplayName("TC009: Validate sign up fails when mail server has special characters")
     public void shouldShowErrorWhenMailServerContainsSpecialCharacters() {
-        NewsletterPage page = new NewsletterPage(driver);
+        newsletterPage.submitWithEmail("user@exam-ple.com");
 
-        page.submitWithEmail("user@exam-ple.com");
-
-        assertTrue(page.isErrorVisible());
-        assertEquals("Valid email required", page.getErrorMessage());
+        assertTrue(newsletterPage.isErrorVisible());
+        assertEquals("Valid email required", newsletterPage.getErrorMessage());
     }
 
     /**
@@ -174,12 +158,10 @@ public class NewsletterTest extends BaseTest {
     @Test
     @DisplayName("TC010: Validate sign up fails when mail server has whitespace")
     public void shouldShowErrorWhenMailServerContainsWhitespace() {
-        NewsletterPage page = new NewsletterPage(driver);
+        newsletterPage.submitWithEmail("user@exam ple.com");
 
-        page.submitWithEmail("user@exam ple.com");
-
-        assertTrue(page.isErrorVisible());
-        assertEquals("Valid email required", page.getErrorMessage());
+        assertTrue(newsletterPage.isErrorVisible());
+        assertEquals("Valid email required", newsletterPage.getErrorMessage());
     }
 
     /**
@@ -188,12 +170,10 @@ public class NewsletterTest extends BaseTest {
     @Test
     @DisplayName("TC011: Validate sign up fails when mail server is empty")
     public void shouldShowErrorWhenMailServerIsEmpty() {
-        NewsletterPage page = new NewsletterPage(driver);
+        newsletterPage.submitWithEmail("user@.com");
 
-        page.submitWithEmail("user@.com");
-
-        assertTrue(page.isErrorVisible());
-        assertEquals("Valid email required", page.getErrorMessage());
+        assertTrue(newsletterPage.isErrorVisible());
+        assertEquals("Valid email required", newsletterPage.getErrorMessage());
     }
 
     /**
@@ -202,12 +182,10 @@ public class NewsletterTest extends BaseTest {
     @Test
     @DisplayName("TC012: Validate sign up fails when domain has numbers")
     public void shouldShowErrorWhenDomainContainsNumbers() {
-        NewsletterPage page = new NewsletterPage(driver);
+        newsletterPage.submitWithEmail("user@example.c0m");
 
-        page.submitWithEmail("user@example.c0m");
-
-        assertTrue(page.isErrorVisible());
-        assertEquals("Valid email required", page.getErrorMessage());
+        assertTrue(newsletterPage.isErrorVisible());
+        assertEquals("Valid email required", newsletterPage.getErrorMessage());
     }
 
     /**
@@ -216,12 +194,10 @@ public class NewsletterTest extends BaseTest {
     @Test
     @DisplayName("TC013: Validate sign up fails when domain has special characters")
     public void shouldShowErrorWhenDomainContainsSpecialCharacters() {
-        NewsletterPage page = new NewsletterPage(driver);
+        newsletterPage.submitWithEmail("user@example.c-om");
 
-        page.submitWithEmail("user@example.c-om");
-
-        assertTrue(page.isErrorVisible());
-        assertEquals("Valid email required", page.getErrorMessage());
+        assertTrue(newsletterPage.isErrorVisible());
+        assertEquals("Valid email required", newsletterPage.getErrorMessage());
     }
 
     /**
@@ -230,12 +206,10 @@ public class NewsletterTest extends BaseTest {
     @Test
     @DisplayName("TC014: Validate sign up fails when domain has whitespace")
     public void shouldShowErrorWhenDomainContainsWhitespace() {
-        NewsletterPage page = new NewsletterPage(driver);
+        newsletterPage.submitWithEmail("user@example.c om");
 
-        page.submitWithEmail("user@example.c om");
-
-        assertTrue(page.isErrorVisible());
-        assertEquals("Valid email required", page.getErrorMessage());
+        assertTrue(newsletterPage.isErrorVisible());
+        assertEquals("Valid email required", newsletterPage.getErrorMessage());
     }
 
     /**
@@ -244,12 +218,10 @@ public class NewsletterTest extends BaseTest {
     @Test
     @DisplayName("TC015: Validate sign up fails when domain is empty")
     public void shouldShowErrorWhenDomainIsEmpty() {
-        NewsletterPage page = new NewsletterPage(driver);
+        newsletterPage.submitWithEmail("user@example.");
 
-        page.submitWithEmail("user@example.");
-
-        assertTrue(page.isErrorVisible());
-        assertEquals("Valid email required", page.getErrorMessage());
+        assertTrue(newsletterPage.isErrorVisible());
+        assertEquals("Valid email required", newsletterPage.getErrorMessage());
     }
 
     /**
@@ -258,12 +230,10 @@ public class NewsletterTest extends BaseTest {
     @Test
     @DisplayName("TC016: Validate sign up fails when @ symbol is missing")
     public void shouldShowErrorWhenAtSymbolIsMissing() {
-        NewsletterPage page = new NewsletterPage(driver);
+        newsletterPage.submitWithEmail("userexample.com");
 
-        page.submitWithEmail("userexample.com");
-
-        assertTrue(page.isErrorVisible());
-        assertEquals("Valid email required", page.getErrorMessage());
+        assertTrue(newsletterPage.isErrorVisible());
+        assertEquals("Valid email required", newsletterPage.getErrorMessage());
     }
 
     /**
@@ -272,11 +242,9 @@ public class NewsletterTest extends BaseTest {
     @Test
     @DisplayName("TC017: Validate sign up fails when dot before domain is missing")
     public void shouldShowErrorWhenDotBeforeDomainIsMissing() {
-        NewsletterPage page = new NewsletterPage(driver);
+        newsletterPage.submitWithEmail("user@examplecom");
 
-        page.submitWithEmail("user@examplecom");
-
-        assertTrue(page.isErrorVisible());
-        assertEquals("Valid email required", page.getErrorMessage());
+        assertTrue(newsletterPage.isErrorVisible());
+        assertEquals("Valid email required", newsletterPage.getErrorMessage());
     }
 }
