@@ -85,7 +85,7 @@ public class SetUp {
         ChromeOptions options = new ChromeOptions();
         
         // Check if running in headless mode (for CI)
-        String headless = System.getProperty("headless", System.getenv("HEADLESS"));
+        String headless = System.getProperty("headless");
         if ("true".equalsIgnoreCase(headless)) {
             options.addArguments("--headless");
             options.addArguments("--no-sandbox");
