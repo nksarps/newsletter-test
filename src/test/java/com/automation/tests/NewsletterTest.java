@@ -28,9 +28,7 @@ public class NewsletterTest extends BaseTest {
      */
     @AfterAll
     public static void afterAll() {
-        if (driver != null) {
-            driver.quit();
-        }
+        tearDown();
     }
 
     /**
