@@ -10,7 +10,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 /**
  * Base page object providing shared WebDriver utilities.
  */
-public class BasePage {
+public class PageHelper {
     /**
      * WebDriver instance used by page objects.
      */
@@ -26,7 +26,7 @@ public class BasePage {
      *
      * @param driver WebDriver instance for browser interactions.
      */
-    public BasePage(WebDriver driver) {
+    public PageHelper(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
