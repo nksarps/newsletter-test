@@ -35,7 +35,7 @@ public class NewsletterPage extends BasePage {
     /**
      * Submit button for the sign-up form.
      */
-    @FindBy(css = "button.submit-btn")
+    @FindBy(className = "submit-btn")
     private WebElement submitButton;
 
     /**
@@ -53,13 +53,13 @@ public class NewsletterPage extends BasePage {
     /**
      * Success header text.
      */
-    @FindBy(css = "h1.success-title")
+    @FindBy(className = "success-title")
     private WebElement successTitle;
 
     /**
      * Success body message text.
      */
-    @FindBy(css = "p.success-message")
+    @FindBy(className = "success-message")
     private WebElement successMessage;
 
     /**
