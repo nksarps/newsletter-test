@@ -1,5 +1,6 @@
 package com.automation.pages;
 
+import com.automation.helpers.PageHelper;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -8,7 +9,7 @@ import org.openqa.selenium.support.PageFactory;
 /**
  * Page object for the newsletter sign-up page.
  */
-public class NewsletterPage extends BasePage {
+public class NewsletterPage extends PageHelper {
     /**
      * Page URL for the newsletter sign-up form.
      */
@@ -19,18 +20,6 @@ public class NewsletterPage extends BasePage {
      */
     @FindBy(id = "email")
     private WebElement emailInput;
-
-    /**
-     * Main sign-up container element.
-     */
-    @FindBy(id = "signup-container")
-    private WebElement signupContainer;
-
-    /**
-     * Newsletter form container.
-     */
-    @FindBy(id = "newsletter-form")
-    private WebElement newsletterForm;
 
     /**
      * Submit button for the sign-up form.
@@ -45,34 +34,16 @@ public class NewsletterPage extends BasePage {
     private WebElement errorMessage;
 
     /**
-     * Container displayed after a successful subscription.
-     */
-    @FindBy(id = "success-container")
-    private WebElement successContainer;
-
-    /**
      * Success header text.
      */
     @FindBy(id = "success-title")
     private WebElement successTitle;
 
     /**
-     * Success body message text.
-     */
-    @FindBy(id = "success-message")
-    private WebElement successMessage;
-
-    /**
      * Element containing the subscribed email in the success message.
      */
     @FindBy(id = "user-email")
     private WebElement successEmail;
-
-    /**
-     * Dismiss button on the success message.
-     */
-    @FindBy(id = "dismiss-btn")
-    private WebElement dismissButton;
 
     /**
      * Creates the page object and initializes its elements.
