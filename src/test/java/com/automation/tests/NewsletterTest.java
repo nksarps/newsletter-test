@@ -1,9 +1,7 @@
 package com.automation.tests;
 
-import com.automation.base.BaseTest;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import com.automation.base.SetUp;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,31 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Tests for the newsletter sign-up flow.
  */
-public class NewsletterTest extends BaseTest {
-    /**
-     * Starts the browser once before all tests.
-     */
-    @BeforeAll
-    public static void beforeAll() {
-        setUp();
-    }
-
-    /**
-     * Quits the browser once after all tests.
-     */
-    @AfterAll
-    public static void afterAll() {
-        tearDown();
-    }
-
-    /**
-     * Opens the newsletter page before each test.
-     */
-    @BeforeEach
-    public void beforeEach() {
-        newsletterPage.open();
-    }
-
+public class NewsletterTest extends SetUp {
     /**
      * Verifies a valid email results in a success message.
      */
