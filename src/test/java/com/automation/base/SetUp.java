@@ -1,5 +1,7 @@
 package com.automation.base;
 
+import com.automation.pages.NewsletterPage;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -11,6 +13,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
  */
 public class SetUp {
     protected static WebDriver driver;
+    protected static NewsletterPage newsletterPage;
 
     /**
      * Initializes the ChromeDriver with appropriate options based on the execution environment.
@@ -40,6 +43,8 @@ public class SetUp {
         
         driver = new ChromeDriver(options);
         driver.get("https://danewsletter.netlify.app/");
+
+        newsletterPage = new NewsletterPage(driver);
     }
 
     /**
