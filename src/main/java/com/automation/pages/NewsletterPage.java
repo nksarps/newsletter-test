@@ -1,5 +1,6 @@
 package com.automation.pages;
 
+import com.automation.helpers.PageHelper;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -8,7 +9,12 @@ import org.openqa.selenium.support.PageFactory;
 /**
  * Page object for the newsletter sign-up page.
  */
-public class NewsletterPage extends BasePage {
+public class NewsletterPage {
+    /**
+     * PageHelper instance for delegation.
+     */
+    private final PageHelper pageHelper;
+
     /**
      * Page URL for the newsletter sign-up form.
      */
@@ -21,21 +27,9 @@ public class NewsletterPage extends BasePage {
     private WebElement emailInput;
 
     /**
-     * Main sign-up container element.
-     */
-    @FindBy(id = "signup-container")
-    private WebElement signupContainer;
-
-    /**
-     * Newsletter form container.
-     */
-    @FindBy(id = "newsletter-form")
-    private WebElement newsletterForm;
-
-    /**
      * Submit button for the sign-up form.
      */
-    @FindBy(css = "button.submit-btn")
+    @FindBy(id = "submit-btn")
     private WebElement submitButton;
 
     /**
@@ -45,22 +39,10 @@ public class NewsletterPage extends BasePage {
     private WebElement errorMessage;
 
     /**
-     * Container displayed after a successful subscription.
-     */
-    @FindBy(id = "success-container")
-    private WebElement successContainer;
-
-    /**
      * Success header text.
      */
-    @FindBy(css = "h1.success-title")
+    @FindBy(id = "success-title")
     private WebElement successTitle;
-
-    /**
-     * Success body message text.
-     */
-    @FindBy(css = "p.success-message")
-    private WebElement successMessage;
 
     /**
      * Element containing the subscribed email in the success message.
@@ -69,18 +51,13 @@ public class NewsletterPage extends BasePage {
     private WebElement successEmail;
 
     /**
-     * Dismiss button on the success message.
-     */
-    @FindBy(id = "dismiss-btn")
-    private WebElement dismissButton;
-
-    /**
      * Creates the page object and initializes its elements.
      *
      * @param driver WebDriver instance for browser interactions.
      */
     public NewsletterPage(WebDriver driver) {
-        super(driver);
+        this.pageHelper = new PageHelper(driver);
+        
         PageFactory.initElements(driver, this);
     }
 
@@ -90,7 +67,7 @@ public class NewsletterPage extends BasePage {
      * @return Current page object for chaining.
      */
     public NewsletterPage open() {
-        openUrl(PAGE_URL);
+        pageHelper.openUrl(PAGE_URL);
         return this;
     }
 
@@ -101,7 +78,7 @@ public class NewsletterPage extends BasePage {
      * @return Current page object for chaining.
      */
     public NewsletterPage enterEmail(String email) {
-        type(emailInput, email);
+        pageHelper.type(emailInput, email);
         return this;
     }
 
@@ -111,7 +88,7 @@ public class NewsletterPage extends BasePage {
      * @return Current page object for chaining.
      */
     public NewsletterPage submit() {
-        click(submitButton);
+        pageHelper.click(submitButton);
         return this;
     }
 
@@ -131,7 +108,7 @@ public class NewsletterPage extends BasePage {
      * @return Error message content.
      */
     public String getErrorMessage() {
-        return getText(errorMessage);
+        return pageHelper.getText(errorMessage);
     }
 
     /**
@@ -140,7 +117,7 @@ public class NewsletterPage extends BasePage {
      * @return True when the error message is visible.
      */
     public boolean isErrorVisible() {
-        return isDisplayed(errorMessage);
+        return pageHelper.isDisplayed(errorMessage);
     }
 
     /**
@@ -149,7 +126,7 @@ public class NewsletterPage extends BasePage {
      * @return Success title content.
      */
     public String getSuccessTitle() {
-        return getText(successTitle);
+        return pageHelper.getText(successTitle);
     }
 
     /**
@@ -158,6 +135,6 @@ public class NewsletterPage extends BasePage {
      * @return Email value shown after subscription.
      */
     public String getSuccessEmail() {
-        return getText(successEmail);
+        return pageHelper.getText(successEmail);
     }
 }
