@@ -41,4 +41,20 @@ public class SetUp {
         driver = new ChromeDriver(options);
         driver.get("https://danewsletter.netlify.app/");
     }
+
+    /**
+     * Closes the browser and cleans up the WebDriver instance after test execution.
+     *
+     * <p>This method checks whether the WebDriver has been initialized.
+     * If it is not null, it calls {@code driver.quit()} to close all browser
+     * windows and safely terminate the WebDriver session.</p>
+     *
+     * <p>This helps prevent memory leaks and ensures that no browser
+     * processes remain running after the tests complete.</p>
+     */
+    public static void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
 }
