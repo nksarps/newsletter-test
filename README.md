@@ -4,10 +4,7 @@ Automated Selenium test suite for testing the newsletter application. This proje
 
 ## 🎯 Project Overview
 
-This repository contains automated tests for the [Newsletter Application](https://danewsletter.netlify.app/). Tests are designed to validate core functionality, ensure reliability, and catch regressions early in the development cycle.
-
-**Application URL:** [https://danewsletter.netlify.app/](https://danewsletter.netlify.app/)  
-**Application Source Code:** [https://github.com/nksarps/newsletter](https://github.com/nksarps/newsletter)
+This repository contains automated tests for a Newsletter Sign-Up Application. The tests ensure the application's core functionality, reliability, and stability throughout the development lifecycle.
 
 ## 📋 Prerequisites
 
