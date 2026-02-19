@@ -64,7 +64,7 @@ public class PageHelper {
      * @param element WebElement to receive the text.
      * @param text Text value to type.
      */
-    protected void type(WebElement element, String text) {
+    public void type(WebElement element, String text) {
         waitForVisible(element);
         element.clear();
         element.sendKeys(text);
@@ -75,7 +75,7 @@ public class PageHelper {
      *
      * @param element WebElement to click.
      */
-    protected void click(WebElement element) {
+    public void click(WebElement element) {
         waitForClickable(element);
         element.click();
     }
@@ -86,7 +86,7 @@ public class PageHelper {
      * @param element WebElement to read.
      * @return Visible text content.
      */
-    protected String getText(WebElement element) {
+    public String getText(WebElement element) {
         waitForVisible(element);
         return element.getText();
     }
@@ -97,7 +97,7 @@ public class PageHelper {
      * @param element WebElement to check.
      * @return True when displayed, false when not displayed or detached.
      */
-    protected boolean isDisplayed(WebElement element) {
+    public boolean isDisplayed(WebElement element) {
         try {
             return element.isDisplayed();
         } catch (RuntimeException ex) {
